@@ -131,6 +131,7 @@ EXPORT_SYMBOL(hdmi_common_supported_video_mode_lut);
 
 struct msm_hdmi_mode_timing_info
 	hdmi_mhl_supported_video_mode_lut[HDMI_VFRMT_MAX] = {
+	VFRMT_NOT_SUPPORTED(HDMI_VFRMT_UNKNOWN),
 	HDMI_VFRMT_640x480p60_4_3_TIMING,
 	VFRMT_NOT_SUPPORTED(HDMI_VFRMT_720x480p60_4_3),
 	VFRMT_NOT_SUPPORTED(HDMI_VFRMT_720x480p60_16_9),
@@ -226,18 +227,18 @@ static ssize_t hdmi_common_rda_edid_modes(struct device *dev,
 		}
 	#endif
 	} else
-		ret += snprintf(buf+ret, PAGE_SIZE-ret, "%d",
+		ret += scnprintf(buf+ret, PAGE_SIZE-ret, "%d",
 			external_common_state->video_resolution+1);
 
 	DEV_DBG("%s: '%s'\n", __func__, buf);
-	ret += snprintf(buf+ret, PAGE_SIZE-ret, "\n");
+	ret += scnprintf(buf+ret, PAGE_SIZE-ret, "\n");
 	return ret;
 }
 
 static ssize_t hdmi_common_rda_edid_physical_address(struct device *dev,
 	struct device_attribute *attr, char *buf)
 {
-	ssize_t ret = snprintf(buf, PAGE_SIZE, "%d\n",
+	ssize_t ret = scnprintf(buf, PAGE_SIZE, "%d\n",
 		external_common_state->physical_address);
 
 	DEV_DBG("%s: '%d'\n", __func__,
@@ -249,7 +250,7 @@ static ssize_t hdmi_common_rda_edid_physical_address(struct device *dev,
 static ssize_t hdmi_common_rda_edid_scan_info(struct device *dev,
 	struct device_attribute *attr, char *buf)
 {
-	ssize_t ret = snprintf(buf, PAGE_SIZE, "%d, %d, %d\n",
+	ssize_t ret = scnprintf(buf, PAGE_SIZE, "%d, %d, %d\n",
 		external_common_state->pt_scan_info,
 		external_common_state->it_scan_info,
 		external_common_state->ce_scan_info);
@@ -358,22 +359,22 @@ static ssize_t hdmi_common_rda_edid_3d_modes(struct device *dev,
 			.disp_3d_mode_list;
 		for (i = 0; i < external_common_state->disp_mode_list
 			.num_of_elements; ++i) {
-			video_3d_format_2string(*video_3d_mode++, buff_3d);
+			video_3d_format_2string(*video_3d_mode++, buff_3d, sizeof(buff_3d));
 			if (ret > 0)
-				ret += snprintf(buf+ret, PAGE_SIZE-ret,
+				ret += scnprintf(buf+ret, PAGE_SIZE-ret,
 					",%d=%s",
 					*video_mode++ + 1, buff_3d);
 			else
-				ret += snprintf(buf+ret, PAGE_SIZE-ret,
+				ret += scnprintf(buf+ret, PAGE_SIZE-ret,
 					"%d=%s",
 					*video_mode++ + 1, buff_3d);
 		}
 	} else
-		ret += snprintf(buf+ret, PAGE_SIZE-ret, "%d",
+		ret += scnprintf(buf+ret, PAGE_SIZE-ret, "%d",
 			external_common_state->video_resolution+1);
 
 	DEV_DBG("%s: '%s'\n", __func__, buf);
-	ret += snprintf(buf+ret, PAGE_SIZE-ret, "\n");
+	ret += scnprintf(buf+ret, PAGE_SIZE-ret, "\n");
 	return ret;
 }
 
@@ -1697,29 +1698,29 @@ const char *single_video_3d_format_2string(uint32 format)
 	return "";
 }
 
-ssize_t video_3d_format_2string(uint32 format, char *buf)
+ssize_t video_3d_format_2string(uint32 format, char *buf, u32 size)
 {
 	ssize_t ret, len = 0;
-	ret = snprintf(buf, PAGE_SIZE, "%s",
+	ret = scnprintf(buf, size, "%s",
 		single_video_3d_format_2string(format & FRAME_PACKING));
 	len += ret;
 
 	if (len && (format & TOP_AND_BOTTOM))
-		ret = snprintf(buf + len, PAGE_SIZE - len, ":%s",
+		ret = scnprintf(buf + len, size - len, ":%s",
 			single_video_3d_format_2string(
 				format & TOP_AND_BOTTOM));
 	else
-		ret = snprintf(buf + len, PAGE_SIZE - len, "%s",
+		ret = scnprintf(buf + len, size - len, "%s",
 			single_video_3d_format_2string(
 				format & TOP_AND_BOTTOM));
 	len += ret;
 
 	if (len && (format & SIDE_BY_SIDE_HALF))
-		ret = snprintf(buf + len, PAGE_SIZE - len, ":%s",
+		ret = scnprintf(buf + len, size - len, ":%s",
 			single_video_3d_format_2string(
 				format & SIDE_BY_SIDE_HALF));
 	else
-		ret = snprintf(buf + len, PAGE_SIZE - len, "%s",
+		ret = scnprintf(buf + len, size - len, "%s",
 			single_video_3d_format_2string(
 				format & SIDE_BY_SIDE_HALF));
 	len += ret;
@@ -1743,7 +1744,7 @@ static void add_supported_3d_format(
 			break;
 		}
 	}
-	video_3d_format_2string(video_3d_format, string);
+	video_3d_format_2string(video_3d_format, string, sizeof(string));
 	DEV_DBG("EDID[3D]: format: %d [%s], %s %s\n",
 		video_format, msm_hdmi_mode_2string(video_format),
 		string, added ? "added" : "NOT added");
