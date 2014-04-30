@@ -4581,6 +4581,11 @@ static void __init apq8064_common_init(void)
 	}
 	BUG_ON(msm_pm_boot_init(&msm_pm_boot_pdata));
 	apq8064_epm_adc_init();
+	pr_err("***********************************************************\n");
+	pr_err("* This kernel only authorized for TDbeta nubia Z5(s) mini *\n");
+	pr_err("* If you want to uesd this kernel, Please send E-mail:    *\n");
+	pr_err("* chenxi.mao2013@gmail.com                                *\n");
+	pr_err("***********************************************************\n");
 }
 
 static void __init apq8064_allocate_memory_regions(void)
