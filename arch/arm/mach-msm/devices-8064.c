@@ -1875,7 +1875,7 @@ struct platform_device apq8064_device_uio_rmtfs = {
 	.resource	= msm_device_uio_rmtfs_rsc,
 };
 
-int __init apq8064_add_uio()
+int __init apq8064_add_uio(void)
 {
 	return platform_device_register(&apq8064_device_uio_rmtfs);
 }
