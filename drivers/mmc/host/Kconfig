@@ -468,7 +468,6 @@ config MMC_MSM
 config ZTEMT_SDCARD_DET_GPIO_ACTIVE_LOW
 	boolean "ZTEMT SD Card Detect GPIO Active Low"
 	depends on MMC_MSM
-	default y
 	help
 	  Say Y here if the SD card detect GPIO is ACTIVE_LOW
 
