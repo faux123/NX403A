@@ -552,7 +552,7 @@ static struct msm_camera_i2c_conf apq8064_back_cam_i2c_conf = {
 	.mux_dev = &msm8960_device_i2c_mux_gsbi4,
 	.i2c_mux_mode = MODE_L,
 };
-
+#ifdef CONFIG_IMX135
 static struct i2c_board_info msm_act_main_cam_i2c_info = {
 	I2C_BOARD_INFO("msm_actuator", 0x11),
 };
@@ -564,7 +564,8 @@ static struct msm_actuator_info msm_act_main_cam_0_info = {
 	.vcm_pwd        = 0,
 	.vcm_enable     = 0,
 };
-
+#endif
+#ifdef CONFIG_IMX091
 static struct i2c_board_info msm_act_main_cam1_i2c_info = {
 	I2C_BOARD_INFO("msm_actuator", 0x18),
 };
@@ -576,14 +577,14 @@ static struct msm_actuator_info msm_act_main_cam_1_info = {
 	.vcm_pwd        = 0,
 	.vcm_enable     = 0,
 };
-
-
+#endif
 static struct msm_camera_i2c_conf apq8064_front_cam_i2c_conf = {
 	.use_i2c_mux = 1,
 	.mux_dev = &msm8960_device_i2c_mux_gsbi4,
 	.i2c_mux_mode = MODE_L,
 };
 
+#ifdef CONFIG_IMX135
 static struct msm_camera_sensor_flash_data flash_imx135 = {
 #ifdef CONFIG_ZTEMT_CAMERA_FLASH_LM3642
 	.flash_type	= MSM_CAMERA_FLASH_LED,
@@ -618,7 +619,8 @@ static struct msm_camera_sensor_info msm_camera_sensor_imx135_data = {
 	.sensor_type = BAYER_SENSOR,
 	.actuator_info = &msm_act_main_cam_0_info,
 };
-
+#endif
+#if 0
 static struct msm_camera_sensor_flash_data flash_imx074 = {
 	.flash_type	= MSM_CAMERA_FLASH_LED,
 	.flash_src	= &msm_flash_src
@@ -658,7 +660,8 @@ static struct msm_camera_sensor_info msm_camera_sensor_imx074_data = {
 	.actuator_info = &msm_act_main_cam_0_info,
 	.eeprom_info = &imx074_eeprom_info,
 };
-
+#endif
+#ifdef CONFIG_IMX091
 static struct msm_camera_csi_lane_params imx091_csi_lane_params = {
 	.csi_lane_assign = 0xE4,
 	.csi_lane_mask = 0xF,
@@ -706,7 +709,8 @@ static struct msm_camera_sensor_info msm_camera_sensor_imx091_data = {
 	.actuator_info = &msm_act_main_cam_1_info,
 	.eeprom_info = &imx091_eeprom_info,
 };
-
+#endif
+#if 0
 static struct msm_camera_sensor_flash_data flash_s5k3l1yx = {
 	.flash_type	= MSM_CAMERA_FLASH_NONE,
 };
@@ -790,7 +794,7 @@ static struct msm_camera_sensor_info msm_camera_sensor_ov2720_data = {
 	.camera_type = FRONT_CAMERA_2D,
 	.sensor_type = BAYER_SENSOR,
 };
-
+#endif
 #ifdef CONFIG_IMX132
 static struct msm_camera_sensor_flash_data flash_imx132 = {
 	.flash_type	= MSM_CAMERA_FLASH_NONE,
@@ -864,13 +868,13 @@ void __init apq8064_init_cam(void)
 	msm_gpiomux_install(apq8064_cam_common_configs,
 			ARRAY_SIZE(apq8064_cam_common_configs));
 	}
-
+#if 0
 	if (machine_is_apq8064_cdp()) {
 		sensor_board_info_imx074.mount_angle = 0;
 		sensor_board_info_mt9m114.mount_angle = 0;
 	} else if (machine_is_apq8064_liquid())
 		sensor_board_info_imx074.mount_angle = 180;
-
+#endif
 	platform_device_register(&msm_camera_server);
 	if (socinfo_get_platform_subtype() != PLATFORM_SUBTYPE_SGLTE2)
 	platform_device_register(&msm8960_device_i2c_mux_gsbi4);
@@ -885,14 +889,19 @@ void __init apq8064_init_cam(void)
 
 #ifdef CONFIG_I2C
 static struct i2c_board_info apq8064_camera_i2c_boardinfo[] = {
+#if 0
 	{
 	I2C_BOARD_INFO("imx074", 0x1A),
 	.platform_data = &msm_camera_sensor_imx074_data,
 	},
+#endif
+#ifdef CONFIG_IMX135
 	{
 	I2C_BOARD_INFO("imx135", 0x20),
 	.platform_data = &msm_camera_sensor_imx135_data,
 	},
+#endif
+#if 0
 	{
 	I2C_BOARD_INFO("mt9m114", 0x48),
 	.platform_data = &msm_camera_sensor_mt9m114_data,
@@ -904,19 +913,24 @@ static struct i2c_board_info apq8064_camera_i2c_boardinfo[] = {
 	{
 	I2C_BOARD_INFO("sc628a", 0x6E),
 	},
+#endif
 #ifdef CONFIG_ZTEMT_CAMERA_FLASH_LM3642
 	{
 	I2C_BOARD_INFO("lm3642", 0x63),//camera flash led driver ic
 	},
 #endif
+#ifdef CONFIG_IMX091
 	{
 	I2C_BOARD_INFO("imx091", 0x34),
 	.platform_data = &msm_camera_sensor_imx091_data,
 	},
+#endif
+#if 0
 	{
 	I2C_BOARD_INFO("s5k3l1yx", 0x21),   //conflict with imx135, change from 0x20 to 0x21, tanyijun
 	.platform_data = &msm_camera_sensor_s5k3l1yx_data,
 	},
+#endif
 #ifdef CONFIG_IMX132
 	{
 	I2C_BOARD_INFO("imx132", 0x6D),//use i2c slave write addr
