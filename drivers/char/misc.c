@@ -59,7 +59,12 @@ static DEFINE_MUTEX(misc_mtx);
 /*
  * Assigned numbers, used for dynamic minors
  */
+#ifdef CONFIG_ZTEMT_LCD_Z5MINI2
 #define DYNAMIC_MINORS 64 /* like dynamic majors */
+#else
+#define DYNAMIC_MINORS 128 /* like dynamic majors */
+#endif
+
 static DECLARE_BITMAP(misc_minors, DYNAMIC_MINORS);
 
 #ifdef CONFIG_PROC_FS
