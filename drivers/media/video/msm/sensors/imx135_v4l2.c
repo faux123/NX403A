@@ -1590,7 +1590,7 @@ static const struct i2c_device_id imx135_i2c_id[] = {
 	{ }
 };
 
- struct i2c_driver imx135_i2c_driver = {
+static struct i2c_driver imx135_i2c_driver = {
 	.id_table = imx135_i2c_id,
 	.probe  = msm_sensor_i2c_probe,
 	.driver = {

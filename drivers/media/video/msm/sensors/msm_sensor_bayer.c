@@ -392,9 +392,7 @@ int32_t msm_sensor_bayer_power_up(struct msm_sensor_ctrl_t *s_ctrl)
 	int32_t rc = 0, size = 0, index = 0;
 	struct msm_camera_sensor_info *data = s_ctrl->sensordata;
 	struct msm_camera_power_seq_t *power_seq = NULL;
-	
 	CDBG("%s: %d\n", __func__, __LINE__);
-	
 	if (s_ctrl->power_seq) {
 		power_seq = s_ctrl->power_seq;
 		size = s_ctrl->num_power_seq;

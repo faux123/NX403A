@@ -814,6 +814,13 @@ int msm_server_proc_ctrl_cmd(struct msm_cam_v4l2_device *pcam,
 		rc = -EINVAL;
 		goto end;
 	}
+
+	if(tmp_cmd.length > 0xffff) {
+		 pr_err("%s Integer Overflow occurred \n",__func__);
+		 rc = -EINVAL;
+		 goto end;
+	}
+
 	value_len = tmp_cmd.length;
 	ctrl_data = kzalloc(value_len+cmd_len, GFP_KERNEL);
 	if (!ctrl_data) {
@@ -1389,6 +1396,7 @@ static long msm_ioctl_server(struct file *file, void *fh,
 			pr_err("%s: Invalid index %d\n", __func__,
 				u_isp_event.isp_data.ctrl.queue_idx);
 			rc = -EINVAL;
+			mutex_unlock(&g_server_dev.server_queue_lock);
 			return rc;
 		}
 
@@ -1581,9 +1589,9 @@ int msm_server_update_sensor_info(struct msm_cam_v4l2_device *pcam,
 	  device info*/
 	snprintf(pcam->media_dev.serial,
 			sizeof(pcam->media_dev.serial),
-			"%s-%d-%d", QCAMERA_NAME,
+			"%s-%d-%d-%d", QCAMERA_NAME,
 			sdata->sensor_platform_info->mount_angle,
-			sdata->camera_type);
+			sdata->camera_type,sdata->sensor_type);
 
 	g_server_dev.camera_info.num_cameras++;
 	g_server_dev.mctl_node_info.num_mctl_nodes++;
@@ -2606,8 +2614,10 @@ int msm_cam_server_close_mctl_session(struct msm_cam_v4l2_device *pcam)
 		return -ENODEV;
 	}
 
-	if (pmctl->mctl_release)
+	if (pmctl->mctl_release) {
 		pmctl->mctl_release(pmctl);
+		pmctl->mctl_release = NULL;
+	}
 
 #ifdef CONFIG_MSM_MULTIMEDIA_USE_ION
 	kref_put(&pmctl->refcount, msm_release_ion_client);
@@ -2639,6 +2649,7 @@ int msm_server_open_client(int *p_qidx)
 		MAX_SERVER_PAYLOAD_LENGTH, GFP_KERNEL);
 	if (!queue->ctrl_data) {
 		pr_err("%s: Could not find memory\n", __func__);
+		mutex_unlock(&g_server_dev.server_lock);
 		return -ENOMEM;
 	}
 	msm_queue_init(&queue->ctrl_q, "control");
