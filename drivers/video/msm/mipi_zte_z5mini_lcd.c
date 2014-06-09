@@ -260,5 +260,4 @@ err_device_put:
 	return ret;
 	
 }
-module_init(mipi_z5mini_lcd_init);
- 
+module_init(mipi_z5mini_lcd_init); 
